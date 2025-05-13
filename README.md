@@ -1,3 +1,10 @@
+
+<div style="text-align: center; margin: 20px 0;">
+  <img src="https://raw.githubusercontent.com/osome-iu/NewsBridge/refs/heads/main/chrome_extension/images/news_bridge.png?token=GHSAT0AAAAAADD2BJSQDYEB5H5RJDS6IVWU2BDPUFQ" 
+       alt="News Bridge Logo" 
+       style="width: 100px; height: auto;">
+</div>
+
 # News Bridge - LLM Facebook chrome browser extension
 
 <h3>Transform your Facebook experience with Facebook News Bridge!</h3> 
