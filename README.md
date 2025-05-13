@@ -1,4 +1,4 @@
-# News Bridge - LLM Facebook browser extension
+# News Bridge - LLM Facebook chrome browser extension
 
 <h3>Transform your Facebook experience with Facebook News Bridge!</h3> 
 
