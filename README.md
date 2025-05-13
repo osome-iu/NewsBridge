@@ -1,6 +1,6 @@
 
 <div style="text-align: center; margin: 20px 0;">
-  <img src="https://raw.githubusercontent.com/osome-iu/NewsBridge/refs/heads/main/chrome_extension/images/news_bridge.png?token=GHSAT0AAAAAADD2BJSQDYEB5H5RJDS6IVWU2BDPUFQ" 
+  <img src="https://raw.githubusercontent.com/osome-iu/NewsBridge/refs/heads/main/chrome_extension/images/news_bridge.png" 
        alt="News Bridge Logo" 
        style="width: 100px; height: auto;">
 </div>
