@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "NewsBridge",
+  "version": "0.4.3",
+  "description": "Transform you Facebook experience with Facebook NewsBridge!",
+  "host_permissions": ["https://osome.iu.edu*"],
+  "author": "Observatory of Social Media",
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/news_bridge.png"
+    }
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.facebook.com/*"],
+      "js": ["js/content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/*", "js/platformConfig.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "background": {
+    "service_worker": "js/background.js"
+  }
+}

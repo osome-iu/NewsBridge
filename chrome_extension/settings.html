@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>NewsBridge: Settings</title>
+    <link rel="stylesheet" href="https://unpkg.com/rivet-core@2.8.1/css/rivet.min.css">
+    <script src="js/settings.js" type="module" defer></script>
+</head>
+
+<body class="rvt-layout">
+<main id="main-content" class="rvt-flex rvt-flex-column rvt-grow-1">
+    <div class="rvt-layout__wrapper [ rvt-p-tb-xxl ]">
+        <div class="rvt-container-sm">
+            <div class="rvt-prose rvt-flow">
+                <h1 class="rvt-m-top-xs">NewsBridge: Settings</h1>
+                <div class="rvt-m-top-xs rvt-p-top-sm rvt-border-top">
+
+                    <!-- API Key Section -->
+                    <div class="rvt-card rvt-card--raised" style="overflow: hidden">
+                        <div class="rvt-flex rvt-items-center rvt-justify-space-between rvt-bg-green-100 rvt-p-all-sm rvt-p-left-md">
+                            <h2 class="rvt-p-tb-sm"><span id="platformName">Google</span> API Key</h2>
+                        </div>
+                        <div class="rvt-p-all-sm rvt-color-black-400">
+                            <p class="rvt-m-bottom-xs">
+                                For detailed instructions on obtaining a <span id="platformNameLower">Google</span> API key, please visit the
+                                <a href="https://osome.iu.edu/resources/tools/newsbridge" target="_blank" class="text-primary">OSoMe NewsBridge</a> page.
+                            </p>
+                            <label for="apiKeyInput" class="rvt-color-black-400"><span id="platformNameLabel">Google</span> API Key</label>
+                            <div class="rvt-flex rvt-items-center rvt-gap-md">
+                                <input type="text" id="apiKeyInput" class="rvt-text-input" placeholder="Enter API key" style="flex: 1;">
+                                <button class="rvt-button" id="submitAPIKeyBtn">Save</button>
+                            </div>
+                            <div id="api-response"></div>
+                        </div>
+                    </div>
+
+                    <!-- Data Sharing Section -->
+                    <div class="rvt-card rvt-card--raised rvt-m-top-sm" style="overflow: hidden">
+                        <div class="rvt-flex rvt-items-center rvt-justify-space-between rvt-bg-green-100 rvt-p-all-sm rvt-p-left-md">
+                            <h2 class="rvt-p-tb-sm">Data Sharing</h2>
+                        </div>
+                        <div class="rvt-p-all-sm rvt-color-black-400">
+                            <label for="shareData"></label><input type="checkbox" id="shareData"/> I would like to share my usage data with <a href="https://osome.iu.edu/" target="_blank">OSoMe</a> to improve NewsBridge.
+                        </div>
+                    </div>
+
+                    <!-- Token Usage Section -->
+                    <div class="rvt-card rvt-card--raised rvt-m-top-sm" style="overflow: hidden">
+                        <div class="rvt-flex rvt-items-center rvt-justify-space-between rvt-bg-green-100 rvt-p-all-sm rvt-p-left-md">
+                            <h2 class="rvt-p-tb-sm">Token Usage</h2>
+                        </div>
+                        <div class="rvt-p-all-sm rvt-color-black-400">
+                            <div class="rvt-card__content [ rvt-p-top-none rvt-m-top-none rvt-border-top-none ]">
+                                <p>Total number of tokens used: </p>
+                                <ol class="rvt-list-plain">
+                                    <li>Prompt token count: <span id="promptTokenCount">0</span></li>
+                                    <li>Candidate token count: <span id="candidateTokenCount">0</span></li>
+                                    <li>Total token count: <span id="totalTokenCount">0</span></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Extension ID Section -->
+                    <div class="rvt-m-top-sm rvt-p-all-sm rvt-bg-white rvt-card rvt-card--raised">
+                        <div class="rvt-flex rvt-items-center rvt-gap-md">
+                            <p class="rvt-m-0 rvt-p-0">Extension Id:</p>
+                            <div class="rvt-flex rvt-items-center rvt-gap-sm rvt-border-all" style="border-width: 2px; border-color: black; border-radius: 5px; padding: 5px;">
+                                <span id="extensionId" class="fw-bold" style="font-size: 11px;"></span>
+                                <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        fill="currentColor"
+                                        class="bi bi-clipboard clipboard-icon"
+                                        viewBox="0 0 16 16"
+                                        id="copyExtensionBtnId"
+                                        style="cursor: pointer;"
+                                >
+                                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                                </svg>
+                            </div>
+                            <p class="rvt-m-0 rvt-p-0" id="copiedText" style="color: green;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
