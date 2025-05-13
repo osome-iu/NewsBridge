@@ -5,7 +5,7 @@
        style="width: 100px; height: auto;">
 </div>
 
-# News Bridge - LLM Facebook chrome browser extension
+# News Bridge - LLM Facebook browser extension
 
 <h3>Transform your Facebook experience with Facebook News Bridge!</h3> 
 
@@ -24,9 +24,25 @@
 </ol>  
 <h4>LLM Details:</h4>
 <ul>
-<li>Current Model: The extension currently uses OpenAI’s ChatGPT-3.5 Turbo. Users need to input their own OpenAI API keys.</li>
-<li>Future Plans: We are actively working on integrating other OpenAI models and open-source alternatives as funding allows.</li>
+  <li>
+    <strong>Current Model:</strong> The extension currently uses OpenAI’s 
+    <a href="https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat" target="_blank" rel="noopener noreferrer">Web Search endpoint</a> and <a href="https://platform.openai.com/docs/models/gpt-4.1" target="_blank" rel="noopener noreferrer">GPT-4.1 model</a> for comment generation. 
+    Users need to input their own OpenAI API keys, to generate the responses. 
+  </li>
+  <li>
+    <strong>Future Plans:</strong> We are actively working on integrating other OpenAI models and open-source alternatives as funding allows.
+  </li>
 </ul>
+<h4>Middleware</h4>
+<ol>
+  <li>Currently the middleware is used for only the store the response from users.</li>
+  <li>Middleware is in carl `/home/data/apps/llm_facebook_browser_extension/Facebook-browser-extension`</li>
+</ol>
+
+<h3>Where the data is stored?</h3>
+<p>The data is stored in a google excel sheet, It with the osome.developer@gmail.com.</p>
+
+
 
 
 
