@@ -1,0 +1,7 @@
+.env
+**log
+**google_key.json
+**/__pycache__
+myvenv
+venv
+**.idea

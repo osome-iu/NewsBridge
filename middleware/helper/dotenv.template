@@ -1,0 +1,12 @@
+# .env file
+DEBUG_MODE=True
+FLASK_PORT=8087
+FLASK_HOST=localhost
+
+# Google API key path
+GOOGLE_API_KEY=""
+# Spreadsheet Id
+SPREADSHEET_ID=""
+
+# Log file path
+LOG_FILE=""
