@@ -1,5 +1,6 @@
 // Select from openai and google
 export const PLATFORM = 'openai';
+export const SOCIALMEDIA = 'facebook';
 
 export const platformConfig = {
     google: {
@@ -19,6 +20,18 @@ export const platformConfig = {
         helpLink: 'https://platform.openai.com/docs/api-reference'
     }
 };
+
+export const socialMediaQuerySelection = {
+    facebook: {
+        // Get the timeline post elements from the feed.
+        timelinePostElements: '.xqcrz7y.x78zum5.x1qx5ct2.x1y1aw1k.x1sxyh0.xwib8y2.xurb0ha.xw4jnvo:not(.processed)',
+        plainTextElements: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd',
+        embeddedUrlElement: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1n2onr6',
+        spinnerIndicateElement: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1iyjqo2',
+        reviewBtnElement: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1iyjqo2'
+    }
+}
+
 
 export async function validateGoogleAPIKey(apiKey) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=${apiKey}`;
@@ -55,3 +68,5 @@ export async function validateOpenAIAPIKey(apiKey) {
         return false;
     }
 }
+
+

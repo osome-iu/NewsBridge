@@ -1,16 +1,17 @@
-// Import platform configuration
 const configUrl = chrome.runtime.getURL('js/platformConfig.js');
 const isChrome = /Chrome/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 
 // Global state
 let uid, apiKey, newsbridgedataSharing;
 let currentPlatform;
+let currentSocialMediaPlatform;
 
 // Initialize platform configuration
 import(configUrl)
     .then(module => {
-        const { PLATFORM, platformConfig } = module;
+        const { PLATFORM, platformConfig, socialMediaQuerySelection, SOCIALMEDIA } = module;
         currentPlatform = platformConfig[PLATFORM];
+        currentSocialMediaPlatform = socialMediaQuerySelection[SOCIALMEDIA]
         startProcess();
     })
     .catch(err => {
@@ -77,7 +78,7 @@ function beginProcess() {
     let postQueue = [];
 
     async function processNextPost() {
-        const timelinePostElements = document.querySelectorAll('.xqcrz7y.x78zum5.x1qx5ct2.x1y1aw1k.x1sxyh0.xwib8y2.xurb0ha.xw4jnvo:not(.processed)');
+        const timelinePostElements = document.querySelectorAll(currentSocialMediaPlatform.timelinePostElements);
 
         for (let post of timelinePostElements) {
             if (!post.hasAttribute('post-id')) {
@@ -117,8 +118,8 @@ async function checkPostContent(postElement) {
     }
 
     // Get all plain text elements and embedded URL elements
-    const plainTextElements = parentSibling.querySelectorAll(".xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd");
-    const embeddedUrlElement = parentSibling.querySelector(".xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1n2onr6");
+    const plainTextElements = parentSibling.querySelectorAll(currentSocialMediaPlatform.plainTextElements);
+    const embeddedUrlElement = parentSibling.querySelector(currentSocialMediaPlatform.embeddedUrlElement);
 
     let content = "";
     let allATags = [];
@@ -237,7 +238,7 @@ async function extractContent(htmlElement) {
 
 // Show loading spinner
 function showSpinner(postElement) {
-    const elements = postElement.parentElement.parentElement.querySelectorAll('.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1iyjqo2');
+    const elements = postElement.parentElement.parentElement.querySelectorAll(currentSocialMediaPlatform.spinnerIndicateElement);
     if (elements.length === 0) return;
 
     if (!document.getElementById('spinnerStyle')) {
@@ -268,7 +269,7 @@ function showSpinner(postElement) {
 
 // Show review button
 async function showReviewBtn(postElement, content, postId) {
-    const container = postElement.parentElement.querySelector('.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1iyjqo2');
+    const container = postElement.parentElement.querySelector(currentSocialMediaPlatform.reviewBtnElement);
     if (!container || container.querySelector('.responseButton')) return;
 
     container.querySelector('.spinner')?.remove();
