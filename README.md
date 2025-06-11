@@ -42,6 +42,8 @@
 <h3>Where the data is stored?</h3>
 <p>The data is stored in a google excel sheet, It with the osome.developer@gmail.com.</p>
 
+<h3>What Facebook HTML elements used to extract the posts</h3>
+<p>Please refer <a href="https://docs.google.com/document/d/1Z5RAhHT91-bP2gjqXzTd0DkFQsABng1RH5gSoZ9TuQA/edit?usp=sharing" target="_blank" rel="noopener noreferrer">here</a>to update the platformConfig.js if there is change happened to Facebook HTML elements. </p>
 
 
 
