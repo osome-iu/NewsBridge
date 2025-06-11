@@ -24,11 +24,11 @@ export const platformConfig = {
 export const socialMediaQuerySelection = {
     facebook: {
         // Get the timeline post elements from the feed.
-        timelinePostElements: '.xqcrz7y.x78zum5.x1qx5ct2.x1y1aw1k.x1sxyh0.xwib8y2.xurb0ha.xw4jnvo:not(.processed)',
-        plainTextElements: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd',
-        embeddedUrlElement: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1n2onr6',
-        spinnerIndicateElement: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1iyjqo2',
-        reviewBtnElement: '.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1iyjqo2'
+        timelinePostElements: '.xqcrz7y.x78zum5.x1qx5ct2.x1y1aw1k.xf159sx.xwib8y2.xmzvs34.xw4jnvo:not(.processed)',
+        spinnerIndicateElement: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl.x1iyjqo2.xeuugli',
+        reviewBtnElement: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl.x1iyjqo2.xeuugli',
+        plainTextElements: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl',
+        embeddedUrlElement: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl.x6ikm8r.x10wlt62'
     }
 }
 
