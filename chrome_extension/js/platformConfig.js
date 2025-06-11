@@ -25,7 +25,6 @@ export const socialMediaQuerySelection = {
     facebook: {
         // Get the timeline post elements from the feed.
         timelinePostElements: '.xqcrz7y.x78zum5.x1qx5ct2.x1y1aw1k.xf159sx.xwib8y2.xmzvs34.xw4jnvo:not(.processed)',
-        spinnerIndicateElement: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl.x1iyjqo2.xeuugli',
         reviewBtnElement: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl.x1iyjqo2.xeuugli',
         plainTextElements: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl',
         embeddedUrlElement: '.xdj266r.x14z9mp.xat24cr.x1lziwak.xexx8yu.xyri2b.x18d9i69.x1c1uobl.x6ikm8r.x10wlt62'

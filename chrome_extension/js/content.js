@@ -238,7 +238,7 @@ async function extractContent(htmlElement) {
 
 // Show loading spinner
 function showSpinner(postElement) {
-    const elements = postElement.parentElement.parentElement.querySelectorAll(currentSocialMediaPlatform.spinnerIndicateElement);
+    const elements = postElement.parentElement.parentElement.querySelectorAll(currentSocialMediaPlatform.reviewBtnElement);
     if (elements.length === 0) return;
 
     if (!document.getElementById('spinnerStyle')) {
