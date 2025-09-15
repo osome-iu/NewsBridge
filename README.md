@@ -36,7 +36,6 @@
 <h4>Middleware</h4>
 <ol>
   <li>Currently the middleware is used for only the store the response from users.</li>
-  <li>Middleware is in carl `/home/data/apps/llm_facebook_browser_extension/Facebook-browser-extension`</li>
 </ol>
 
 <h3>Where the data is stored?</h3>
