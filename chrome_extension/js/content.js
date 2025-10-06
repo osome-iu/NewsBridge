@@ -679,13 +679,43 @@ function createSinglePerspectiveCard(perspectiveTitle, content, accentColor) {
         border-radius: 6px; padding: 16px; min-width: 0;
     `;
 
+    // Create header container with image and text
+    const headerContainer = document.createElement('div');
+    headerContainer.style.cssText = `
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 0 12px 0; gap: 8px;
+    `;
+
+    // Determine which logo to use and its position
+    const isDemocrat = perspectiveTitle === 'Democrat';
+    const logoSrc = isDemocrat ? 'democratic_party.png' : 'republican_party.png';
+    
+    // Create the logo image
+    const logo = document.createElement('img');
+    logo.src = chrome.runtime.getURL(`images/${logoSrc}`);
+    logo.alt = `${perspectiveTitle} Logo`;
+    logo.style.cssText = `
+        width: 24px; height: 24px; object-fit: contain;
+    `;
+
+    // Create the title text
     const header = document.createElement('h4');
     header.textContent = perspectiveTitle;
     header.style.cssText = `
         color: ${accentColor}; font-weight: bold; font-size: 20px;
-        margin: 0 0 12px 0; text-align: center;
+        margin: 0; text-align: center;
     `;
-    card.appendChild(header);
+
+    // Add logo and title in correct order
+    if (isDemocrat) {
+        headerContainer.appendChild(logo);
+        headerContainer.appendChild(header);
+    } else {
+        headerContainer.appendChild(header);
+        headerContainer.appendChild(logo);
+    }
+
+    card.appendChild(headerContainer);
 
     const text = document.createElement('p');
     text.textContent = content;
