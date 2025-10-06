@@ -641,7 +641,7 @@ function createDualPerspectiveCard(democratPerspective, republicanPerspective) {
     title.textContent = 'Political Perspectives';
     title.style.cssText = `
         text-align: center; color: black; font-weight: bold;
-        font-size: 18px; margin: 0 0 15px 0;
+        font-size: 20px; margin: 0 0 18px 0;
     `;
     container.appendChild(title);
 
@@ -663,7 +663,7 @@ function createDualPerspectiveCard(democratPerspective, republicanPerspective) {
     const note = document.createElement('p');
     note.textContent = 'Note: These perspectives are AI-generated to show different viewpoints. Always verify information independently.';
     note.style.cssText = `
-        text-align: center; color: #666; font-size: 11px; 
+        text-align: center; color: #666; font-size: 12px; 
         margin-top: 15px; font-style: italic;
     `;
     container.appendChild(note);
@@ -682,7 +682,7 @@ function createSinglePerspectiveCard(perspectiveTitle, content, accentColor) {
     const header = document.createElement('h4');
     header.textContent = perspectiveTitle;
     header.style.cssText = `
-        color: ${accentColor}; font-weight: bold; font-size: 15px;
+        color: ${accentColor}; font-weight: bold; font-size: 20px;
         margin: 0 0 12px 0; text-align: center;
     `;
     card.appendChild(header);
@@ -690,7 +690,7 @@ function createSinglePerspectiveCard(perspectiveTitle, content, accentColor) {
     const text = document.createElement('p');
     text.textContent = content;
     text.style.cssText = `
-        color: black; font-size: 12px; line-height: 1.6;
+        color: black; font-size: 18px; line-height: 1.6;
         margin: 0; text-align: left;
     `;
     card.appendChild(text);
