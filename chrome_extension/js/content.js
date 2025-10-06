@@ -1,21 +1,40 @@
 const configUrl = chrome.runtime.getURL('js/platformConfig.js');
+const keywordsUrl = chrome.runtime.getURL('config/keywords.json');
 const isChrome = /Chrome/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 
 // Global state
 let uid, apiKey, newsbridgedataSharing;
 let currentPlatform;
 let currentSocialMediaPlatform;
+let POLITICAL_KEYWORDS = []; // Will be loaded from keywords.json
 
-// Initialize platform configuration
-import(configUrl)
-    .then(module => {
+// Load keywords from JSON file
+async function loadKeywords() {
+    try {
+        const response = await fetch(keywordsUrl);
+        const data = await response.json();
+        POLITICAL_KEYWORDS = data.politicalKeywords || [];
+        console.log('Political keywords loaded:', POLITICAL_KEYWORDS);
+    } catch (error) {
+        console.error('Error loading keywords:', error);
+        // Fallback to default keywords if loading fails
+        POLITICAL_KEYWORDS = ["politics", "trump", "healthcare", "democrat", "republican"];
+    }
+}
+
+// Initialize platform configuration and keywords
+Promise.all([
+    import(configUrl),
+    loadKeywords()
+])
+    .then(([module]) => {
         const { PLATFORM, platformConfig, socialMediaQuerySelection, SOCIALMEDIA } = module;
         currentPlatform = platformConfig[PLATFORM];
-        currentSocialMediaPlatform = socialMediaQuerySelection[SOCIALMEDIA]
+        currentSocialMediaPlatform = socialMediaQuerySelection[SOCIALMEDIA];
         startProcess();
     })
     .catch(err => {
-        console.log("Error in getting the platform configurations.")
+        console.log("Error in getting the platform configurations or keywords:", err);
     });
 
 // Update token counts and state
@@ -148,7 +167,7 @@ async function checkPostContent(postElement) {
             const domainPattern = /(?:https?:\/\/)?[\w.-]+\.[\w.-]+(?:\/[^\s"'<>]*)?/gi;
             const embeddedUrls = embeddedElementTextContent.match(domainPattern) || [];
             if(embeddedUrls.length){
-                await showReviewBtn(postElement, content, postElement.getAttribute('post-id'));
+                await showReviewBtn(postElement, content, postElement.getAttribute('post-id'), true);
             }
         }else{
             const aTagsEmbedded = embeddedUrlElement.querySelectorAll("a");
@@ -207,15 +226,31 @@ async function checkPostContent(postElement) {
             if (embeddedUrlElement) {
                 content += embeddedUrlElement.innerText;
             }
-            await showReviewBtn(postElement, content, postElement.getAttribute('post-id'));
+            await showReviewBtn(postElement, content, postElement.getAttribute('post-id'), true);
             foundValidUrl = true;
             break;
         } catch (error) {
             continue;
         }
     }
+    
+    // If no valid URL was found, check for political keywords
+    if (!foundValidUrl && content) {
+        const hasPoliticalKeywords = checkForPoliticalKeywords(content);
+        if (hasPoliticalKeywords) {
+            await showReviewBtn(postElement, content, postElement.getAttribute('post-id'), false);
+            foundValidUrl = true;
+        }
+    }
+    
     // Mark as processed even if no URLs were found
     postElement.classList.add('processed');
+}
+
+// Check if content contains political keywords
+function checkForPoliticalKeywords(content) {
+    const lowerContent = content.toLowerCase();
+    return POLITICAL_KEYWORDS.some(keyword => lowerContent.includes(keyword.toLowerCase()));
 }
 
 
@@ -268,7 +303,7 @@ function showSpinner(postElement) {
 }
 
 // Show review button
-async function showReviewBtn(postElement, content, postId) {
+async function showReviewBtn(postElement, content, postId, hasUrl = true) {
     const container = postElement.parentElement.querySelector(currentSocialMediaPlatform.reviewBtnElement);
     if (!container || container.querySelector('.responseButton')) return;
 
@@ -289,13 +324,13 @@ async function showReviewBtn(postElement, content, postId) {
 
     button.appendChild(img);
     button.appendChild(document.createTextNode("Review"));
-    button.addEventListener('click', () => showResponseModal(content, postId));
+    button.addEventListener('click', () => showResponseModal(content, postId, hasUrl));
 
     container.appendChild(button);
 }
 
 // Show response modal
-async function showResponseModal(content, postId) {
+async function showResponseModal(content, postId, hasUrl = true) {
     const {modalContainer } = createModal();
 
     if (!apiKey) {
@@ -303,6 +338,53 @@ async function showResponseModal(content, postId) {
         return;
     }
 
+    // Check if content has political keywords
+    const hasPoliticalKeywords = checkForPoliticalKeywords(content);
+    
+    // If no URL but has political keywords, show dual perspective
+    if (!hasUrl && hasPoliticalKeywords) {
+        const loading = createLoadingMessage(modalContainer, 'Generating perspectives');
+        
+        try {
+            // Generate both perspectives in parallel
+            const [democratResponse, republicanResponse] = await Promise.all([
+                callGenerativeAPI({
+                    content: content,
+                    generateComment: false,
+                    postId: postId,
+                    perspective: 'democrat'
+                }),
+                callGenerativeAPI({
+                    content: content,
+                    generateComment: false,
+                    postId: postId,
+                    perspective: 'republican'
+                })
+            ]);
+            
+            loading.remove();
+            
+            if (!democratResponse.isSuccess || !republicanResponse.isSuccess) {
+                showError(modalContainer, "NewsBridge Error!", 
+                    democratResponse.errorMsg || republicanResponse.errorMsg);
+                return;
+            }
+            
+            // Create dual perspective card
+            const perspectiveCard = createDualPerspectiveCard(
+                democratResponse.dataReceived,
+                republicanResponse.dataReceived
+            );
+            modalContainer.appendChild(perspectiveCard);
+            
+        } catch (error) {
+            loading.remove();
+            showError(modalContainer, "NewsBridge Error!", error.message);
+        }
+        return;
+    }
+
+    // Original URL-based flow
     const loading = createLoadingMessage(modalContainer, 'Reviewing article');
 
     try {
@@ -347,8 +429,8 @@ function createModal() {
     const modalContainer = document.createElement('div');
     modalContainer.style.cssText = `
         background-color: #fefefe; padding: 20px; border: 1px solid #888;
-        width: 40%; text-align: center; display: flex; border-radius: 4px;
-        flex-direction: column; position: relative;
+        width: 80%; max-width: 1000px; text-align: center; display: flex; border-radius: 4px;
+        flex-direction: column; position: relative; max-height: 90vh; overflow-y: auto;
     `;
 
     const closeButton = document.createElement('span');
@@ -546,6 +628,106 @@ function createSourcesHeader(webLinks) {
     return header;
 }
 
+// Create dual perspective card for political content
+function createDualPerspectiveCard(democratPerspective, republicanPerspective) {
+    const container = document.createElement('div');
+    container.style.cssText = `
+        background-color: white; border: 1px solid #ddd; border-radius: 4px;
+        padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 100%; margin-top: 12px;
+    `;
+
+    const title = document.createElement('h3');
+    title.textContent = 'Political Perspectives';
+    title.style.cssText = `
+        text-align: center; color: black; font-weight: bold;
+        font-size: 20px; margin: 0 0 18px 0;
+    `;
+    container.appendChild(title);
+
+    const perspectivesContainer = document.createElement('div');
+    perspectivesContainer.style.cssText = `
+        display: flex; gap: 15px; justify-content: space-between;
+    `;
+
+    // Democrat perspective
+    const democratCard = createSinglePerspectiveCard('Democrat', democratPerspective, '#4A90E2');
+    perspectivesContainer.appendChild(democratCard);
+
+    // Republican perspective
+    const republicanCard = createSinglePerspectiveCard('Republican', republicanPerspective, '#E24A4A');
+    perspectivesContainer.appendChild(republicanCard);
+
+    container.appendChild(perspectivesContainer);
+
+    const note = document.createElement('p');
+    note.textContent = 'Note: These perspectives are AI-generated to show different viewpoints. Always verify information independently.';
+    note.style.cssText = `
+        text-align: center; color: #666; font-size: 12px; 
+        margin-top: 15px; font-style: italic;
+    `;
+    container.appendChild(note);
+
+    return container;
+}
+
+// Create a single perspective card
+function createSinglePerspectiveCard(perspectiveTitle, content, accentColor) {
+    const card = document.createElement('div');
+    card.style.cssText = `
+        flex: 1; background-color: #f9f9f9; border: 2px solid ${accentColor};
+        border-radius: 6px; padding: 16px; min-width: 0;
+    `;
+
+    // Create header container with image and text
+    const headerContainer = document.createElement('div');
+    headerContainer.style.cssText = `
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 0 12px 0; gap: 8px;
+    `;
+
+    // Determine which logo to use and its position
+    const isDemocrat = perspectiveTitle === 'Democrat';
+    const logoSrc = isDemocrat ? 'democratic_party.png' : 'republican_party.png';
+    
+    // Create the logo image
+    const logo = document.createElement('img');
+    logo.src = chrome.runtime.getURL(`images/${logoSrc}`);
+    logo.alt = `${perspectiveTitle} Logo`;
+    logo.style.cssText = `
+        width: 24px; height: 24px; object-fit: contain;
+    `;
+
+    // Create the title text
+    const header = document.createElement('h4');
+    header.textContent = perspectiveTitle;
+    header.style.cssText = `
+        color: ${accentColor}; font-weight: bold; font-size: 20px;
+        margin: 0; text-align: center;
+    `;
+
+    // Add logo and title in correct order
+    if (isDemocrat) {
+        headerContainer.appendChild(logo);
+        headerContainer.appendChild(header);
+    } else {
+        headerContainer.appendChild(header);
+        headerContainer.appendChild(logo);
+    }
+
+    card.appendChild(headerContainer);
+
+    const text = document.createElement('p');
+    text.textContent = content;
+    text.style.cssText = `
+        color: black; font-size: 18px; line-height: 1.6;
+        margin: 0; text-align: left;
+    `;
+    card.appendChild(text);
+
+    return card;
+}
+
 // Create generate comment button
 function createGenerateCommentButton(content, contextHTML, container, postId) {
     const button = document.createElement('button');
@@ -677,9 +859,17 @@ const generateCommentPrompt = "Generate a very short, friendly, casual response 
     "Write in the style of an average, polite social media user without being condescending, confrontational, or pedantic. " +
     "You want to help the original poster to better understand the context.  The goal is to create a comment that bridges the POST and the CONTEXT.  Do not use emojis"
 
+const generateDemocratPerspectivePrompt = "You are analyzing a social media post from a Democrat perspective. " +
+    "Provide a respectful, thoughtful analysis of how someone with Democrat/liberal political views might interpret this content." +
+    "Keep your answer very short and concise."
+
+const generateRepublicanPerspectivePrompt = "You are analyzing a social media post from a Republican/conservative perspective. " +
+    "Provide a respectful, thoughtful analysis of how someone with Republican/conservative political views might interpret this content. " +
+    "Keep your answer very short and concise."
+
 // Call generative AI API
 async function callGenerativeAPI(options) {
-    const { content, context, generateComment, postId } = options;
+    const { content, context, generateComment, postId, perspective } = options;
 
     if (!apiKey) {
         return {
@@ -690,6 +880,18 @@ async function callGenerativeAPI(options) {
 
     try {
         let apiUrl, requestBody, headers;
+        
+        // Determine which prompt to use
+        let systemPrompt;
+        if (perspective === 'democrat') {
+            systemPrompt = generateDemocratPerspectivePrompt;
+        } else if (perspective === 'republican') {
+            systemPrompt = generateRepublicanPerspectivePrompt;
+        } else if (generateComment) {
+            systemPrompt = generateCommentPrompt;
+        } else {
+            systemPrompt = generateContextPrompt;
+        }
 
         if (currentPlatform.name === 'Google') {
             apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=${apiKey}`;
@@ -703,16 +905,16 @@ async function callGenerativeAPI(options) {
                 }],
                 systemInstruction: {
                     parts: [{
-                        text: generateComment
-                            ? generateCommentPrompt
-                            : generateContextPrompt
+                        text: systemPrompt
                     }]
                 },
-                tools: {
-                    google_search_retrieval: {
-                        dynamic_retrieval_config: { mode: 'MODE_DYNAMIC' }
+                ...(!perspective && !generateComment && {
+                    tools: {
+                        google_search_retrieval: {
+                            dynamic_retrieval_config: { mode: 'MODE_DYNAMIC' }
+                        }
                     }
-                }
+                })
             };
             headers = {
                 'Content-Type': 'application/json'
@@ -720,13 +922,11 @@ async function callGenerativeAPI(options) {
         } else { // OpenAI
             apiUrl = 'https://api.openai.com/v1/chat/completions';
             requestBody = {
-                model: generateComment ? "gpt-4.1" : "gpt-4o-search-preview",
-                ...(!generateComment && { web_search_options: {} }),
+                model: generateComment || perspective ? "gpt-4.1" : "gpt-4o-search-preview",
+                ...(!generateComment && !perspective && { web_search_options: {} }),
                 messages: [{
                     role: "system",
-                    content: generateComment
-                        ? generateCommentPrompt
-                        : generateContextPrompt
+                    content: systemPrompt
                 }, {
                     role: "user",
                     content: generateComment ? `POST: ${content}\nCONTEXT: ${context}` : content
@@ -762,7 +962,7 @@ async function callGenerativeAPI(options) {
 
         return {
             isSuccess: true,
-            dataReceived: generateComment
+            dataReceived: (generateComment || perspective)
                 ? extractGeneratedText(data)
                 : buildResponseContent(data)
         };
