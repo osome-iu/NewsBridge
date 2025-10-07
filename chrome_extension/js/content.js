@@ -79,7 +79,6 @@ function beginProcess() {
 
     async function processNextPost() {
         const timelinePostElements = document.querySelectorAll(currentSocialMediaPlatform.timelinePostElements);
-
         for (let post of timelinePostElements) {
             if (!post.hasAttribute('post-id')) {
                 post.setAttribute('post-id', crypto.randomUUID());
@@ -224,13 +223,15 @@ async function checkPostContent(postElement) {
 // Extract content from post
 async function extractContent(htmlElement) {
     let content = htmlElement.innerText;
-
     if (content.includes("See more")) {
         const seeMoreLink = htmlElement.querySelector(currentSocialMediaPlatform.seeMoreElement);
+
         if (seeMoreLink) {
             seeMoreLink.click();
             await new Promise(resolve => setTimeout(resolve, 1000));
             content = htmlElement.innerText;
+        } else {
+            console.log("No 'See more' link found with selector:", currentSocialMediaPlatform.seeMoreElement);
         }
     }
     return content;
@@ -501,6 +502,11 @@ function createSourcesHeader(webLinks) {
     header.style.cssText = `
         margin-top: 2px; text-align: left; color: black;
         font-size: 12px; display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     `;
 
     const label = document.createElement('span');
@@ -569,7 +575,6 @@ function createGenerateCommentButton(content, contextHTML, container, postId) {
 
         // Remove the existing comment section
         const existingCard = container.querySelector('#commentCard');
-
         if (existingCard) {
             existingCard.remove();
         }
@@ -581,6 +586,7 @@ function createGenerateCommentButton(content, contextHTML, container, postId) {
                 generateComment: true,
                 postId: postId
             });
+
 
             loading.remove();
 
