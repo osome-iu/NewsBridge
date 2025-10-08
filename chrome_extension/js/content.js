@@ -126,8 +126,6 @@ async function checkPostContent(postElement) {
     // Get all plain text elements and embedded URL elements
     const plainTextElements = parentSibling.querySelectorAll(currentSocialMediaPlatform.plainTextElements);
     const embeddedUrlElement = parentSibling.querySelector(currentSocialMediaPlatform.embeddedUrlElement);
-    // console.log(plainTextElements)
-    // console.log(embeddedUrlElement)
     let content = "";
     let allATags = [];
 
@@ -279,7 +277,6 @@ function showSpinner(postElement) {
 // Show review button
 async function showReviewBtn(postElement, content, postId) {
     const container = postElement.parentElement.querySelector(currentSocialMediaPlatform.reviewBtnElement);
-    console.log(container)
     if (!container || container.querySelector('.responseButton')) return;
 
     container.querySelector('.spinner')?.remove();
