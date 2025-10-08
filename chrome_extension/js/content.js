@@ -110,7 +110,14 @@ function beginProcess() {
 // Check post content for URLs
 async function checkPostContent(postElement) {
     showSpinner(postElement);
-    const parentSibling = postElement.parentElement.parentElement.nextElementSibling;
+    let parentSibling;
+
+    if (isChrome){
+        parentSibling = postElement.parentElement.parentElement.parentElement.nextElementSibling;
+    }else{
+        parentSibling = postElement.parentElement.parentElement.nextElementSibling;
+    }
+
     if (!parentSibling) {
         postElement.classList.add('processed');
         return;
@@ -119,7 +126,8 @@ async function checkPostContent(postElement) {
     // Get all plain text elements and embedded URL elements
     const plainTextElements = parentSibling.querySelectorAll(currentSocialMediaPlatform.plainTextElements);
     const embeddedUrlElement = parentSibling.querySelector(currentSocialMediaPlatform.embeddedUrlElement);
-
+    // console.log(plainTextElements)
+    // console.log(embeddedUrlElement)
     let content = "";
     let allATags = [];
 
@@ -271,6 +279,7 @@ function showSpinner(postElement) {
 // Show review button
 async function showReviewBtn(postElement, content, postId) {
     const container = postElement.parentElement.querySelector(currentSocialMediaPlatform.reviewBtnElement);
+    console.log(container)
     if (!container || container.querySelector('.responseButton')) return;
 
     container.querySelector('.spinner')?.remove();
@@ -290,7 +299,11 @@ async function showReviewBtn(postElement, content, postId) {
 
     button.appendChild(img);
     button.appendChild(document.createTextNode("Review"));
-    button.addEventListener('click', () => showResponseModal(content, postId));
+    button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        showResponseModal(content, postId);
+    });
 
     container.appendChild(button);
 }
