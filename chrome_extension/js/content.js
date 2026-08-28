@@ -79,7 +79,6 @@ function beginProcess() {
 
     async function processNextPost() {
         const timelinePostElements = document.querySelectorAll(currentSocialMediaPlatform.timelinePostElements);
-
         for (let post of timelinePostElements) {
             if (!post.hasAttribute('post-id')) {
                 post.setAttribute('post-id', crypto.randomUUID());
@@ -111,7 +110,14 @@ function beginProcess() {
 // Check post content for URLs
 async function checkPostContent(postElement) {
     showSpinner(postElement);
-    const parentSibling = postElement.parentElement.parentElement.nextElementSibling;
+    let parentSibling;
+
+    if (isChrome){
+        parentSibling = postElement.parentElement.parentElement.parentElement.nextElementSibling;
+    }else{
+        parentSibling = postElement.parentElement.parentElement.nextElementSibling;
+    }
+
     if (!parentSibling) {
         postElement.classList.add('processed');
         return;
@@ -120,7 +126,6 @@ async function checkPostContent(postElement) {
     // Get all plain text elements and embedded URL elements
     const plainTextElements = parentSibling.querySelectorAll(currentSocialMediaPlatform.plainTextElements);
     const embeddedUrlElement = parentSibling.querySelector(currentSocialMediaPlatform.embeddedUrlElement);
-
     let content = "";
     let allATags = [];
 
@@ -224,13 +229,15 @@ async function checkPostContent(postElement) {
 // Extract content from post
 async function extractContent(htmlElement) {
     let content = htmlElement.innerText;
-
     if (content.includes("See more")) {
         const seeMoreLink = htmlElement.querySelector(currentSocialMediaPlatform.seeMoreElement);
+
         if (seeMoreLink) {
             seeMoreLink.click();
             await new Promise(resolve => setTimeout(resolve, 1000));
             content = htmlElement.innerText;
+        } else {
+            console.log("No 'See more' link found with selector:", currentSocialMediaPlatform.seeMoreElement);
         }
     }
     return content;
@@ -289,7 +296,11 @@ async function showReviewBtn(postElement, content, postId) {
 
     button.appendChild(img);
     button.appendChild(document.createTextNode("Review"));
-    button.addEventListener('click', () => showResponseModal(content, postId));
+    button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        showResponseModal(content, postId);
+    });
 
     container.appendChild(button);
 }
@@ -501,6 +512,11 @@ function createSourcesHeader(webLinks) {
     header.style.cssText = `
         margin-top: 2px; text-align: left; color: black;
         font-size: 12px; display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     `;
 
     const label = document.createElement('span');
@@ -569,7 +585,6 @@ function createGenerateCommentButton(content, contextHTML, container, postId) {
 
         // Remove the existing comment section
         const existingCard = container.querySelector('#commentCard');
-
         if (existingCard) {
             existingCard.remove();
         }
@@ -581,6 +596,7 @@ function createGenerateCommentButton(content, contextHTML, container, postId) {
                 generateComment: true,
                 postId: postId
             });
+
 
             loading.remove();
 

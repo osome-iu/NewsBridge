@@ -34,9 +34,9 @@
   </li>
 </ul>
 <h4>Middleware</h4>
-<ol>
+<ul>
   <li>Currently the middleware is used for only the store the response from users.</li>
-</ol>
+</ul>
 
 <h3>Where the data is stored?</h3>
 <p>The data is stored in a google excel sheet, It with the osome.developer@gmail.com.</p>
